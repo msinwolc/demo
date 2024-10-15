@@ -30,6 +30,10 @@ export const useUpgradeStore = defineStore('upgrade', {
     currentLevel() {
       return this.currentRealm.levels[this.currentLevelIndex];
     },
+    nextLevel() {
+      let cur = this.currentLevelIndex < 8 ? this.currentLevelIndex + 1 : 8
+      return this.currentRealm.levels[cur];
+    },
   },
   actions: {
     gainExperience(amount) {
@@ -76,17 +80,46 @@ export const useUpgradeStore = defineStore('upgrade', {
     },
     attemptBreakthrough() {
       if (this.currentLevel.level === 9 && this.experience >= this.currentLevel.experience) {
-        const successChance = 0.9;
+        const successChance = -0.9;
         if (Math.random() < successChance) {
           this.experience = 0;
           if (this.currentRealmIndex < realms.length - 1) {
             this.currentRealmIndex += 1;
             this.currentLevelIndex = 0;
+            return true;
           }
         } else {
           this.startCooldown();
         }
         // this.saveState();
+        return false;
+      }
+    },
+    attemptBreakthroughWithPill(pills) {
+      if (this.currentLevel.level === 9 && this.experience >= this.currentLevel.experience) {
+        let successChance = 0.9;
+        // 遍历提供的药品数组，计算总成功概率
+        pills.forEach(pill => {
+          const inventoryItem = this.inventory.find(item => item.name === pill.name);
+          if (inventoryItem) {
+            successChance += inventoryItem.successRate * pill.quantity; // 根据药品的成功率和数量提升成功率
+          }
+        });
+
+        successChance = -1;
+
+        if (Math.random() < successChance) {
+          this.experience = 0;
+          if (this.currentRealmIndex < realms.length - 1) {
+            this.currentRealmIndex += 1;
+            this.currentLevelIndex = 0;
+            return true;
+          }
+        } else {
+          this.startCooldown();
+        }
+        // this.saveState();
+        return false;
       }
     },
     startCooldown() {
@@ -126,6 +159,12 @@ export const useUpgradeStore = defineStore('upgrade', {
         this.removeItemFromInventory(itemName, 1);
         // this.saveState();
       }
+    },
+    // 新增方法：添加新手礼包的道具
+    addStarterPackItems() {
+      const starterItem = { name: '初级筑基丹', quantity: 5, successRate: 0.1 };
+      this.addItemToInventory(starterItem);
+      // this.saveState();
     },
     // 保存状态到 localStorage
     saveState() {

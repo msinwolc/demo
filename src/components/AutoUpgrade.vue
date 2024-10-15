@@ -1,41 +1,66 @@
 <!-- src/components/AutoUpgrade.vue -->
 <template>
   <div style="padding: 20px;">
-    <a-card title="修炼界面" style="width: 400px; margin: auto;">
+    <a-card title="修炼界面" style="width: 80%; margin: auto;">
+      <!-- 当前境界信息 -->
       <p>当前境界: {{ store.currentRealm.name }}{{ levels[store.currentLevel.level - 1] }}</p>
       <p>可用天赋点: {{ store.talentPoints }}</p>
-      <p>血量: {{ store.health }}</p>
-      <p>攻击: {{ store.attack }}</p>
-      <p>防御: {{ store.defense }}</p>
 
-      <a-progress type="circle" :percent="progressPercent" status="active" :width="80" />
+      <!-- 属性及加号按钮 -->
+      <div>
+        <p>血量: {{ store.health }}
+          <a-button @click="upgrade('health')" size="small" icon="+" :disabled="store.talentPoints <= 0"
+            style="margin-left: 8px;"></a-button>
+        </p>
+        <p>攻击: {{ store.attack }}
+          <a-button @click="upgrade('attack')" size="small" icon="+" :disabled="store.talentPoints <= 0"
+            style="margin-left: 8px;"></a-button>
+        </p>
+        <p>防御: {{ store.defense }}
+          <a-button @click="upgrade('defense')" size="small" icon="+" :disabled="store.talentPoints <= 0"
+            style="margin-left: 8px;"></a-button>
+        </p>
+      </div>
+
+      <!-- 进度条 -->
+      <div style="text-align: center; margin-top: 20px;">
+        <a-progress type="circle" :percent="progressPercent" status="active" :width="80" />
+      </div>
 
       <a-divider />
 
-      <h2>分配天赋点</h2>
-      <a-button @click="upgrade('health')" :disabled="store.talentPoints <= 0" type="primary"
-        style="margin-right: 8px;">升级血量</a-button>
-      <a-button @click="upgrade('attack')" :disabled="store.talentPoints <= 0" type="primary"
-        style="margin-right: 8px;">升级攻击</a-button>
-      <a-button @click="upgrade('defense')" :disabled="store.talentPoints <= 0" type="primary">升级防御</a-button>
+      <!-- 突破和丹药突破按钮 -->
+      <a-space style="display: flex; justify-content: center; margin-top: 20px;" size="large">
+        <a-button type="primary" @click="breakthrough" :disabled="!canBreakthrough">直接突破</a-button>
+        <a-button type="primary" danger @click="showPotionModal" :disabled="!canBreakthrough">丹药突破</a-button>
+      </a-space>
 
       <a-divider />
 
-      <div style="margin-top: 20px;">
-        <a-button type="primary" @click="breakthrough" :disabled="!canBreakthrough"
-          style="margin-right: 10px;">直接突破</a-button>
-        <a-button type="dashed" @click="showPotionModal" :disabled="!canBreakthrough">丹药突破</a-button>
+      <!-- 领取新手礼包按钮 -->
+      <div style="text-align: center; margin-top: 10px;">
+        <a-button type="primary" @click="claimStarterPack">领取新手礼包</a-button>
       </div>
     </a-card>
 
-    <!-- 背包选择弹窗 -->
-    <a-modal v-model:visible="isPotionModalVisible" title="选择丹药" @ok="onInventoryConfirm">
-      <div v-for="item in filteredInventory" :key="item.name" style="margin-bottom: 10px;">
-        <span>{{ item.name }} (成功率加 {{ item.successRate }}%)</span>
-        <a-input-number v-model="item.count" min="0" style="margin-left: 10px;" />
-      </div>
+    <!-- 选择丹药弹窗 -->
+    <a-modal v-model:open="isPotionModalVisible" title="选择丹药" @ok="breakthroughWithPill" width="80%">
+      <a-row gutter="16">
+        <a-col v-for="(item, index) in filteredInventoryPill" :key="index" :span="24">
+          <a-card :title="item.name" hoverable>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <p>数量: {{ item.quantity }}</p>
+              <div style="display: flex; align-items: center;">
+                <a-button @click="decrementQuantity(item.name)" :disabled="item.selectedQuantity <= 0">-</a-button>
+                <span style="margin: 0 8px;">{{ selectedQuantities.find(x => x.name === item.name).quantity }}</span>
+                <a-button @click="incrementQuantity(item.name)"
+                  :disabled="item.selectedQuantity >= item.quantity">+</a-button>
+              </div>
+            </div>
+          </a-card>
+        </a-col>
+      </a-row>
     </a-modal>
-
   </div>
 </template>
 
@@ -43,9 +68,12 @@
 import { onMounted, computed, ref } from 'vue';
 import { useUpgradeStore, levels } from '../stores/upgradeStore';
 import { realms } from '@/constants/realms';
+import { message } from 'ant-design-vue';
 
 const store = useUpgradeStore();
+
 const isPotionModalVisible = ref(false);
+const selectedQuantities = ref([{}]);
 
 onMounted(() => {
   startGaining();
@@ -60,7 +88,22 @@ function upgrade(stat) {
 }
 
 function breakthrough() {
-  store.attemptBreakthrough(); // 调用突破方法
+  let res = store.attemptBreakthrough(); // 调用突破方法
+  if (res) {
+    message.success(`突破成功！恭喜道友步入${store.currentRealm.name}期。`);
+  } else {
+    message.error("突破失败！根基受损，道友还是巩固一下再来吧。")
+  }
+}
+
+function breakthroughWithPill() {
+  let res = store.attemptBreakthroughWithPill(selectedQuantities.value); // 调用突破方法
+  isPotionModalVisible.value = false;
+  if (res) {
+    message.success(`突破成功！恭喜道友步入${store.currentRealm.name}期。`);
+  } else {
+    message.error("突破失败！根基受损，道友还是巩固一下再来吧。")
+  }
 }
 
 function showPotionModal() {
@@ -70,7 +113,7 @@ function showPotionModal() {
 // 计算当前经验的进度百分比并保留两位小数
 const progressPercent = computed(() => {
   const currentExp = store.experience;
-  const requiredExp = store.currentLevel.experience;
+  const requiredExp = store.nextLevel.experience;
   // 确保防止除以零的错误
   if (requiredExp === 0) return 0;
   return Math.min(((currentExp / requiredExp) * 100).toFixed(2), 100); // 计算进度百分比并保留两位小数
@@ -78,25 +121,44 @@ const progressPercent = computed(() => {
 
 // 检查是否可以突破
 const canBreakthrough = computed(() => {
-  return store.currentLevel.level === 9 && store.experience >= store.currentLevel.experience;
+  return store.currentLevel.level === 9 && store.experience >= store.currentLevel.experience && !store.breakthroughCooldown;
 });
 
-// TODO
-const inventory = ref([
-  { name: '初级筑基丹', successRate: 20, count: 0 }, // 提高20%的成功率
-  { name: '中级筑基丹', successRate: 30, count: 0 }, // 提高30%的成功率
-  { name: '高级筑基丹', successRate: 50, count: 0 }, // 提高50%的成功率
-  { name: '初级炼气丹', successRate: 15, count: 0 }, // 提高15%的成功率
-  { name: '中级炼气丹', successRate: 25, count: 0 }, // 提高25%的成功率
-]);
+function claimStarterPack() {
+  // 调用 store 的方法领取礼包
+  store.addStarterPackItems();
+  message.success('领取成功，获得5个初级筑基丹');
+}
 
 // 筛选与当前境界相关的丹药
-const filteredInventory = computed(() => {
+const filteredInventoryPill = computed(() => {
   const nextRealmName = realms[store.currentRealmIndex + 1].name;
-  return inventory.value.filter(item => item.name.includes(nextRealmName));
+  const filteredItems = store.inventory.filter(item => item.name.includes(nextRealmName));
+
+  // 初始化 selectedQuantities 中对应的每种丹药的数量
+  filteredItems.forEach(item => {
+    if (!(item.name in selectedQuantities.value)) {
+      selectedQuantities.value.push({ name: item.name, quantity: item.quantity }); // 初始化为 0
+    }
+  });
+
+  return filteredItems;
 });
 
-function onInventoryConfirm() {
-
+// 增加和减少选择的数量
+function incrementQuantity(itemName) {
+  const pill = filteredInventoryPill.value.find(item => item.name === itemName);
+  let selected = selectedQuantities.value.find(item => item.name === itemName);
+  if (selected.quantity < pill.quantity) {
+    selected.quantity++;
+  }
 }
+
+function decrementQuantity(itemName) {
+  let selected = selectedQuantities.value.find(item => item.name === itemName);
+  if (selected.quantity > 0) {
+    selected.quantity--;
+  }
+}
+
 </script>
