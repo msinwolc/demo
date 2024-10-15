@@ -69,7 +69,8 @@
       <a-divider />
       <a-space style="display: flex; justify-content: center; margin-top: 20px;" size="large">
         <a-button type="primary" @click="goToHerbGathering">外出采药</a-button>
-        <a-button type="primary" @click="goToAlchemyProcess">前往炼丹</a-button>
+        <a-button type="primary" @click="goToAlchemyProcess">前往炼丹房</a-button>
+        <a-button type="primary" @click="goToCryptoMining">外出挖矿</a-button>
       </a-space>
 
     </a-card>
@@ -126,6 +127,10 @@ function goToHerbGathering() {
 
 function goToAlchemyProcess() {
   router.push({ name: 'AlchemyProcess' });
+}
+
+function goToCryptoMining() {
+  router.push({ name: 'CryptoMining' });
 }
 
 // 计算属性，只返回数量大于 0 的物品

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import AutoUpgrade from '@/components/AutoUpgrade.vue';
 import HerbForaging  from '@/components/HerbForaging.vue';
 import AlchemyProcess from '@/components/AlchemyProcess.vue';
+import CryptoMining from '@/components/CryptoMining.vue';
 
 const routes = [
   {
@@ -17,7 +18,12 @@ const routes = [
   {
     path: '/alchemy',
     name: 'AlchemyProcess',
-    component: AlchemyProcess , // 采药界面组件
+    component: AlchemyProcess , // 炼丹房界面组件
+  },
+  {
+    path: '/mining',
+    name: 'CryptoMining',
+    component: CryptoMining , // 挖矿界面组件
   },
   // 可以继续添加其他路由
 ];
