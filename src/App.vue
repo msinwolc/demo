@@ -1,14 +1,13 @@
 <template>
-  <AutoUpgrade></AutoUpgrade>
+  <router-view></router-view>
 </template>
 
 <script>
-import AutoUpgrade from './components/AutoUpgrade.vue';
 
 export default {
   name: 'App',
   components: {
-    AutoUpgrade
+    
   }
 }
 </script>

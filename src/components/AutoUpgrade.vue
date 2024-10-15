@@ -38,9 +38,40 @@
       <a-divider />
 
       <!-- 领取新手礼包按钮 -->
-      <div style="text-align: center; margin-top: 10px;">
+      <div style="text-align: center; margin-top: 10px;" v-if="!store.starterPackItems">
         <a-button type="primary" @click="claimStarterPack">领取新手礼包</a-button>
+        <a-divider />
       </div>
+
+      <a-tabs default-active-key="1" centered>
+        <a-tab-pane key="1" tab="装备">
+          <p>装备内容展示...</p>
+        </a-tab-pane>
+
+        <a-tab-pane key="2" tab="道具">
+          <a-row gutter={16} justify="start" style="flex-wrap: wrap;">
+            <a-col v-for="(item, index) in availableItems" :key="index" :xs="24" :sm="12" :md="8" :lg="6" :xl="4"
+              style="display: flex; justify-content: center;">
+              <a-space style="display: flex; justify-content: center;" size="middle">
+                <a-button style="width: 100%; margin-bottom: 10px;">
+                  {{ item.name }} ({{ item.quantity }})
+                </a-button>
+              </a-space>
+            </a-col>
+          </a-row>
+        </a-tab-pane>
+
+        <a-tab-pane key="3" tab="材料">
+          <p>材料内容展示...</p>
+        </a-tab-pane>
+      </a-tabs>
+
+      <a-divider />
+      <a-space style="display: flex; justify-content: center; margin-top: 20px;" size="large">
+        <a-button type="primary" @click="goToHerbGathering">外出采药</a-button>
+        <a-button type="primary" @click="goToAlchemyProcess">前往炼丹</a-button>
+      </a-space>
+
     </a-card>
 
     <!-- 选择丹药弹窗 -->
@@ -69,8 +100,10 @@ import { onMounted, computed, ref } from 'vue';
 import { useUpgradeStore, levels } from '../stores/upgradeStore';
 import { realms } from '@/constants/realms';
 import { message } from 'ant-design-vue';
+import { useRouter } from 'vue-router';
 
 const store = useUpgradeStore();
+const router = useRouter();
 
 const isPotionModalVisible = ref(false);
 const selectedQuantities = ref([{}]);
@@ -86,6 +119,19 @@ function startGaining() {
 function upgrade(stat) {
   store.upgradeStat(stat);
 }
+
+function goToHerbGathering() {
+  router.push({ name: 'HerbGathering' });
+}
+
+function goToAlchemyProcess() {
+  router.push({ name: 'AlchemyProcess' });
+}
+
+// 计算属性，只返回数量大于 0 的物品
+const availableItems = computed(() => {
+  return store.inventory.filter(item => item.quantity > 0);
+});
 
 function breakthrough() {
   let res = store.attemptBreakthrough(); // 调用突破方法
@@ -127,7 +173,7 @@ const canBreakthrough = computed(() => {
 function claimStarterPack() {
   // 调用 store 的方法领取礼包
   store.addStarterPackItems();
-  message.success('领取成功，获得5个初级筑基丹');
+  message.success('领取成功，获得初级筑基丹 x5，灵石 x1000');
 }
 
 // 筛选与当前境界相关的丹药

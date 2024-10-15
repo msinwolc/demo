@@ -16,6 +16,7 @@ function loadState() {
     breakthroughCooldown: false,
     cooldownTime: 5000,
     inventory: [], // 背包
+    starterPackItems: false
   };
 }
 
@@ -103,6 +104,7 @@ export const useUpgradeStore = defineStore('upgrade', {
           const inventoryItem = this.inventory.find(item => item.name === pill.name);
           if (inventoryItem) {
             successChance += inventoryItem.successRate * pill.quantity; // 根据药品的成功率和数量提升成功率
+            inventoryItem.quantity -= pill.quantity;
           }
         });
 
@@ -136,6 +138,7 @@ export const useUpgradeStore = defineStore('upgrade', {
       } else {
         this.inventory.push({ ...item, quantity: item.quantity || 1 });
       }
+      this.starterPackItems = true;
       // this.saveState();
     },
     // 从背包移除物品
@@ -160,10 +163,16 @@ export const useUpgradeStore = defineStore('upgrade', {
         // this.saveState();
       }
     },
+    getInventoryQuantity(materialName) {
+      const item = this.inventory.find(item => item.name === materialName);
+      return item ? item.quantity : 0;
+    },
     // 新增方法：添加新手礼包的道具
     addStarterPackItems() {
-      const starterItem = { name: '初级筑基丹', quantity: 5, successRate: 0.1 };
-      this.addItemToInventory(starterItem);
+      const danyao = { name: '初级筑基丹', quantity: 5, successRate: 0.1 };
+      const money = { name: '灵石', quantity: 1000 }
+      this.addItemToInventory(danyao);
+      this.addItemToInventory(money);
       // this.saveState();
     },
     // 保存状态到 localStorage
