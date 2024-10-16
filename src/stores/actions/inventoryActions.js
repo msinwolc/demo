@@ -16,7 +16,7 @@ export const inventoryActions = {
         if (item) {
             item.quantity -= quantity;
             if (item.quantity <= 0) {
-                this.player.inventory = this.player.inventory.filter(i => i.name !== itemName);
+                item.quantity = 0;
             }
         }
     },

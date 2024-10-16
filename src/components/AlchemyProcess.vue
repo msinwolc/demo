@@ -127,7 +127,7 @@ function finishAlchemy() {
     };
 
     // 将生成的丹药加入背包
-    store.inventory.push(newPill);
+    store.addItemToInventory(newPill);
     message.success(`炼制成功，获得${newPill.name} x${newPill.quantity}！`);
 }
 </script>
