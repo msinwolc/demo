@@ -1,5 +1,6 @@
 // src/stores/getters/playGetter.js
 
+import { miningLevels } from "@/constants/miningLevels";
 import { realms } from "@/constants/realms";
 
 export const levelsMap = ['一层', '二层', '三层', '四层', '五层', '六层', '七层', '八层', '九层'];
@@ -39,4 +40,19 @@ export const playerGetters = {
     requiredExp() {
         return this.nextLevel.experience;
     },
+    playerMiningLevel() {
+        for (let i = miningLevels.length - 1; i >= 0; i--) {
+            if (this.player.miningExp >= miningLevels[i].requiredExperience) {
+                return miningLevels[i];
+            }
+        }
+        return miningLevels[0]; // 返回最低等级
+    },
+    nextMiningLevel() {
+        const currentIndex = miningLevels.indexOf(this.playerMiningLevel);
+        return miningLevels[currentIndex + 1] || this.playerMiningLevel;
+    },
+    playerMiningBouns() {
+        return this.playerMiningLevel.miningBonus;
+    }
 };

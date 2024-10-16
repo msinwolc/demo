@@ -10,10 +10,11 @@ function loadState() {
   const savedState = localStorage.getItem('upgradeStore');
   return savedState ? JSON.parse(savedState) : {
     player: {
-      experience: 0,
-      currentRealmIndex: 0,
-      currentLevelIndex: 0,
-      talentPoints: 0,
+      experience: 0, // 境界经验
+      miningExp: 0, // 挖矿经验
+      currentRealmIndex: 0, // 当前境界
+      currentLevelIndex: 0, // 当前层级
+      talentPoints: 0, // 天赋点
       health: 10,
       attack: 10,
       defense: 10,

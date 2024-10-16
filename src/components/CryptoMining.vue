@@ -6,6 +6,12 @@
 
             <a-divider />
 
+            <h2>{{ store.playerMiningLevel.name }}（+{{ ((store.playerMiningBouns - 1) * 100).toFixed(0) }}%）</h2>
+
+            <a-progress :percent="miningLevelProgress" status="active" />
+
+            <a-divider />
+
             <!-- 显示挖矿结果 -->
             <div>
                 <h3>挖矿结果</h3>
@@ -27,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { message } from 'ant-design-vue';
 import { ores } from '@/constants/ores';
 import { useUpgradeStore } from '@/stores/upgradeStore';
@@ -84,10 +90,14 @@ const stopMining = () => {
     miningInterval = null;
 };
 
+const miningLevelProgress = computed(() => {
+    return ((store.player.miningExp / store.nextMiningLevel.requiredExperience) * 100).toFixed(0);
+});
+
 const updateMiningResults = () => {
     // 随机选择一种矿石，并增加随机数量
     const randomOre = getRandomOre();
-    const randomAmount = Math.floor(Math.random() * 10 + 1);
+    const randomAmount = Math.floor(Math.random() * 10 * store.playerMiningBouns + 1);
     // 更新挖矿结果
     const oreToUpdate = miningResults.value.find(ore => ore.name === randomOre.name);
     if (oreToUpdate) {
@@ -95,6 +105,7 @@ const updateMiningResults = () => {
     }
 
     store.addItemToInventory({ name: randomOre.name, quantity: randomAmount, type: 'material' });
+    store.gainMiningExp();
 
     message.success(`挖到了一些${randomOre.name}！`);
 };

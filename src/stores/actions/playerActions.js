@@ -94,4 +94,7 @@ export const playerActions = {
             this.player.breakthroughCooldown = false;
         }, this.player.cooldownTime);
     },
+    gainMiningExp() {
+        this.player.miningExp += 10;
+    }
 };
