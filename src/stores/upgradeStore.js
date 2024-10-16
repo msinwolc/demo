@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { playerGetters } from './getters/playGetter';
 import { playerActions } from './actions/playerActions';
 import { inventoryGetters } from './getters/inventoryGetters';
+import { inventoryActions } from './actions/inventoryActions';
 
 // 从 localStorage 加载初始状态
 function loadState() {
@@ -32,5 +33,6 @@ export const useUpgradeStore = defineStore('upgrade', {
   },
   actions: {
     ...playerActions,
+    ...inventoryActions,
   },
 });

@@ -1,13 +1,13 @@
-// src/stores/actions/inventoryAction.js
+// src/stores/actions/inventoryActions.js
 
-export const inventoryAction = {
+export const inventoryActions = {
     // 添加物品到背包
     addItemToInventory(item) {
         const existingItem = this.getItemByName(item.name);
         if (existingItem) {
             existingItem.quantity += item.quantity;
         } else {
-            this.inventory.push({ ...item, quantity: item.quantity || 1 });
+            this.player.inventory.push({ ...item, quantity: item.quantity || 1 });
         }
     },
     // 从背包移除物品
@@ -34,5 +34,11 @@ export const inventoryAction = {
     getInventoryQuantity(materialName) {
         const item = this.getItemByName(materialName);
         return item ? item.quantity : 0;
+    },
+    filterItemByType(type) {
+        return this.player.inventory.filter(item => item.quantity > 0 && item.type === type);
+    },
+    filterItemByName(name) {
+        return this.player.inventory.filter(item => item.name.includes(name));
     },
 };

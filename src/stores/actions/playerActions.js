@@ -10,6 +10,7 @@ export const playerActions = {
             this.player.experience >= this.playerRealm.levels[this.player.currentLevelIndex + 1].experience) {
             this.player.currentLevelIndex++;
             this.player.talentPoints += this.playerLevel.talentPoints;
+            this.player.experience = 0
         }
 
         while (this.player.currentRealmIndex < realms.length - 1 &&
@@ -18,6 +19,7 @@ export const playerActions = {
             this.player.currentRealmIndex++;
             this.player.currentLevelIndex = 0;
             this.player.talentPoints += realms[this.player.currentRealmIndex].levels[0].talentPoints;
+            this.player.experience = 0
         }
 
     },

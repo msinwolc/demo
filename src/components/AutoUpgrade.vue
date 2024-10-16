@@ -38,7 +38,7 @@
       <a-divider />
 
       <!-- 领取新手礼包按钮 -->
-      <div style="text-align: center; margin-top: 10px;" v-if="!store.starterPackItems">
+      <div style="text-align: center; margin-top: 10px;" v-if="!store.player.starterPackItems">
         <a-button type="primary" @click="claimStarterPack">领取新手礼包</a-button>
         <a-divider />
       </div>
@@ -108,7 +108,6 @@
 <script setup>
 import { onMounted, computed, ref } from 'vue';
 import { useUpgradeStore } from '../stores/upgradeStore';
-import { realms } from '@/constants/realms';
 import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
 
@@ -144,17 +143,17 @@ function goToCryptoMining() {
 
 // 计算属性，只返回数量大于 0 的物品
 const availableConsumable = computed(() => {
-  return store.inventory.filter(item => item.quantity > 0 && item.type === 'consumable');
+  return store.filterItemByType('consumable');
 });
 
 const availableMeterial = computed(() => {
-  return store.inventory.filter(item => item.quantity > 0 && item.type === 'material');
+  return store.filterItemByType('material');
 });
 
 function breakthrough() {
   let res = store.attemptBreakthrough(); // 调用突破方法
   if (res) {
-    message.success(`突破成功！恭喜道友步入${store.currentRealm.name}期。`);
+    message.success(`突破成功！恭喜道友步入${store.playerRealm.name}期。`);
   } else {
     message.error("突破失败！根基受损，道友还是巩固一下再来吧。")
   }
@@ -164,7 +163,7 @@ function breakthroughWithPill() {
   let res = store.attemptBreakthroughWithPill(selectedQuantities.value); // 调用突破方法
   isPotionModalVisible.value = false;
   if (res) {
-    message.success(`突破成功！恭喜道友步入${store.currentRealm.name}期。`);
+    message.success(`突破成功！恭喜道友步入${store.playerRealm.name}期。`);
   } else {
     message.error("突破失败！根基受损，道友还是巩固一下再来吧。")
   }
@@ -196,8 +195,8 @@ function claimStarterPack() {
 
 // 筛选与当前境界相关的丹药
 const filteredInventoryPill = computed(() => {
-  const nextRealmName = realms[store.currentRealmIndex + 1].name;
-  const filteredItems = store.inventory.filter(item => item.name.includes(nextRealmName));
+  const nextRealmName = store.nextRealm.name;
+  const filteredItems = store.filterItemByName(nextRealmName);
 
   // 初始化 selectedQuantities 中对应的每种丹药的数量
   filteredItems.forEach(item => {

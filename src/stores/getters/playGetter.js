@@ -11,6 +11,9 @@ export const playerGetters = {
     playerLevel() {
         return this.playerRealm.levels[this.player.currentLevelIndex];
     },
+    nextRealm() {
+        return realms[this.player.currentRealmIndex + 1];
+    },
     nextLevel() {
         let cur = this.player.currentLevelIndex < 8 ? this.player.currentLevelIndex + 1 : 8;
         return this.playerRealm.levels[cur];
@@ -34,6 +37,6 @@ export const playerGetters = {
         return this.player.talentPoints;
     },
     requiredExp() {
-        this.nextLevel.experience;
+        return this.nextLevel.experience;
     },
 };
