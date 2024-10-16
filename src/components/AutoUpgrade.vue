@@ -3,21 +3,21 @@
   <div style="padding: 20px;">
     <a-card title="修炼界面" style="width: 80%; margin: auto;">
       <!-- 当前境界信息 -->
-      <p>当前境界: {{ store.currentRealm.name }}{{ levels[store.currentLevel.level - 1] }}</p>
-      <p>可用天赋点: {{ store.talentPoints }}</p>
+      <p>当前境界: {{ store.playerRealName }}</p>
+      <p>可用天赋点: {{ store.playerTalentPoints }}</p>
 
       <!-- 属性及加号按钮 -->
       <div>
-        <p>血量: {{ store.health }}
-          <a-button @click="upgrade('health')" size="small" icon="+" :disabled="store.talentPoints <= 0"
+        <p>血量: {{ store.playerHealth }}
+          <a-button @click="upgrade('health')" size="small" icon="+" :disabled="store.playerTalentPoints <= 0"
             style="margin-left: 8px;"></a-button>
         </p>
-        <p>攻击: {{ store.attack }}
-          <a-button @click="upgrade('attack')" size="small" icon="+" :disabled="store.talentPoints <= 0"
+        <p>攻击: {{ store.playerAttack }}
+          <a-button @click="upgrade('attack')" size="small" icon="+" :disabled="store.playerTalentPoints <= 0"
             style="margin-left: 8px;"></a-button>
         </p>
-        <p>防御: {{ store.defense }}
-          <a-button @click="upgrade('defense')" size="small" icon="+" :disabled="store.talentPoints <= 0"
+        <p>防御: {{ store.playerDefense }}
+          <a-button @click="upgrade('defense')" size="small" icon="+" :disabled="store.playerTalentPoints <= 0"
             style="margin-left: 8px;"></a-button>
         </p>
       </div>
@@ -107,7 +107,7 @@
 
 <script setup>
 import { onMounted, computed, ref } from 'vue';
-import { useUpgradeStore, levels } from '../stores/upgradeStore';
+import { useUpgradeStore } from '../stores/upgradeStore';
 import { realms } from '@/constants/realms';
 import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
@@ -176,8 +176,8 @@ function showPotionModal() {
 
 // 计算当前经验的进度百分比并保留两位小数
 const progressPercent = computed(() => {
-  const currentExp = store.experience;
-  const requiredExp = store.nextLevel.experience;
+  const currentExp = store.playerExperience;
+  const requiredExp = store.requiredExp;
   // 确保防止除以零的错误
   if (requiredExp === 0) return 0;
   return Math.min(((currentExp / requiredExp) * 100).toFixed(2), 100); // 计算进度百分比并保留两位小数
@@ -185,7 +185,7 @@ const progressPercent = computed(() => {
 
 // 检查是否可以突破
 const canBreakthrough = computed(() => {
-  return store.currentLevel.level === 9 && store.experience >= store.currentLevel.experience && !store.breakthroughCooldown;
+  return store.playerLevel.level === 9 && store.player.experience >= store.playerLevel.experience && !store.player.breakthroughCooldown;
 });
 
 function claimStarterPack() {
