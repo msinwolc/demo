@@ -11,7 +11,7 @@
                 <h3>挖矿结果</h3>
                 <a-row>
                     <a-col v-for="(result, index) in miningResults" :key="index" :span="8">
-                        <a-button style="margin-top: 10px;" :style="{ backgroundColor: result.color, color: '#fff' }">
+                        <a-button style="margin-top: 10px;" :style="{ color: result.color }">
                             {{ result.name }}: {{ result.amount }}
                         </a-button>
                     </a-col>
@@ -30,6 +30,9 @@
 import { ref } from 'vue';
 import { message } from 'ant-design-vue';
 import { ores } from '@/constants/ores';
+import { useUpgradeStore } from '@/stores/upgradeStore';
+
+const store = useUpgradeStore();
 
 const progress = ref(0);
 const miningResults = ref([...ores]);
@@ -45,6 +48,20 @@ const toggleMining = () => {
         stopMining();
         message.info('停止挖矿');
     }
+};
+
+// 根据权重计算挖到矿石的概率
+const getRandomOre = () => {
+    const totalWeight = ores.reduce((sum, ore) => sum + ore.weight, 0);
+    let randomValue = Math.random() * totalWeight;
+
+    for (const ore of ores) {
+        if (randomValue < ore.weight) {
+            return ore;
+        }
+        randomValue -= ore.weight;
+    }
+    return ores[0]; // 兜底，防止意外情况
 };
 
 const startMining = () => {
@@ -69,11 +86,17 @@ const stopMining = () => {
 
 const updateMiningResults = () => {
     // 随机选择一种矿石，并增加随机数量
-    const randomIndex = Math.floor(Math.random() * miningResults.value.length);
+    const randomOre = getRandomOre();
     const randomAmount = Math.floor(Math.random() * 10 + 1);
-    miningResults.value[randomIndex].amount += randomAmount;
+    // 更新挖矿结果
+    const oreToUpdate = miningResults.value.find(ore => ore.name === randomOre.name);
+    if (oreToUpdate) {
+        oreToUpdate.amount += randomAmount;
+    }
 
-    message.success(`挖到了一些${miningResults.value[randomIndex].name}！`);
+    store.addItemToInventory({ name: randomOre.name, quantity: randomAmount, type: 'material' });
+
+    message.success(`挖到了一些${randomOre.name}！`);
 };
 </script>
 

@@ -50,7 +50,7 @@
 
         <a-tab-pane key="2" tab="道具">
           <a-row gutter={16} justify="start" style="flex-wrap: wrap;">
-            <a-col v-for="(item, index) in availableItems" :key="index" :xs="24" :sm="12" :md="8" :lg="6" :xl="4"
+            <a-col v-for="(item, index) in availableConsumable" :key="index" :xs="24" :sm="12" :md="8" :lg="6" :xl="4"
               style="display: flex; justify-content: center;">
               <a-space style="display: flex; justify-content: center;" size="middle">
                 <a-button style="width: 100%; margin-bottom: 10px;">
@@ -62,7 +62,16 @@
         </a-tab-pane>
 
         <a-tab-pane key="3" tab="材料">
-          <p>材料内容展示...</p>
+          <a-row gutter={16} justify="start" style="flex-wrap: wrap;">
+            <a-col v-for="(item, index) in availableMeterial" :key="index" :xs="24" :sm="12" :md="8" :lg="6" :xl="4"
+              style="display: flex; justify-content: center;">
+              <a-space style="display: flex; justify-content: center;" size="middle">
+                <a-button style="width: 100%; margin-bottom: 10px;">
+                  {{ item.name }} ({{ item.quantity }})
+                </a-button>
+              </a-space>
+            </a-col>
+          </a-row>
         </a-tab-pane>
       </a-tabs>
 
@@ -134,8 +143,12 @@ function goToCryptoMining() {
 }
 
 // 计算属性，只返回数量大于 0 的物品
-const availableItems = computed(() => {
-  return store.inventory.filter(item => item.quantity > 0);
+const availableConsumable = computed(() => {
+  return store.inventory.filter(item => item.quantity > 0 && item.type === 'consumable');
+});
+
+const availableMeterial = computed(() => {
+  return store.inventory.filter(item => item.quantity > 0 && item.type === 'material');
 });
 
 function breakthrough() {

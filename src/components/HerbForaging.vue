@@ -40,7 +40,7 @@ function forage(realm) {
             const gainedMaterial = materials[Math.floor(Math.random() * materials.length)];
             const randomQuantity = Math.floor(Math.random() * 10) + 1;
             // 将获得的材料添加到背包
-            store.addItemToInventory({ name: gainedMaterial.name, quantity: randomQuantity });
+            store.addItemToInventory({ name: gainedMaterial.name, quantity: randomQuantity, type: 'material' });
             let msg = `成功获得: ${gainedMaterial.name} x ${randomQuantity}`;
             removeMsg();
             gainedMaterials.value.push(msg);

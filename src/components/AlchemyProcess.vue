@@ -123,6 +123,7 @@ function finishAlchemy() {
     const newPill = {
         name: `${pillQuality}${selectedFormula.value.name}`,
         quantity: quantity,
+        type: 'consumable'
     };
 
     // 将生成的丹药加入背包

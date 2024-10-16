@@ -169,8 +169,8 @@ export const useUpgradeStore = defineStore('upgrade', {
     },
     // 新增方法：添加新手礼包的道具
     addStarterPackItems() {
-      const danyao = { name: '初级筑基丹', quantity: 5, successRate: 0.1 };
-      const money = { name: '灵石', quantity: 1000 }
+      const danyao = { name: '初级筑基丹', quantity: 5, successRate: 0.1, type: 'consumable' };
+      const money = { name: '灵石', quantity: 1000, type: 'consumable' }
       this.addItemToInventory(danyao);
       this.addItemToInventory(money);
       // this.saveState();
