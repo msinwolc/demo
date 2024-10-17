@@ -1,6 +1,7 @@
 // src/stores/getters/playGetter.js
 
 import { miningLevels } from "@/constants/miningLevels";
+import { alchemyLevels } from "@/constants/alchemyLevels";
 import { realms } from "@/constants/realms";
 
 export const levelsMap = ['一层', '二层', '三层', '四层', '五层', '六层', '七层', '八层', '九层'];
@@ -54,5 +55,17 @@ export const playerGetters = {
     },
     playerMiningBouns() {
         return this.playerMiningLevel.miningBonus;
-    }
+    },
+    playerAlchemyLevel() {
+        for (let i = alchemyLevels.length - 1; i >= 0; i--) {
+            if (this.player.miningExp >= alchemyLevels[i].requiredExperience) {
+                return alchemyLevels[i];
+            }
+        }
+        return alchemyLevels[0]; // 返回最低等级
+    },
+    nextAlchemyLevel() {
+        const currentIndex = alchemyLevels.indexOf(this.playerAlchemyLevel);
+        return alchemyLevels[currentIndex + 1] || this.playerAlchemyLevel;
+    },
 };

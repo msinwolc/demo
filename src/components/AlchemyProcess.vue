@@ -6,6 +6,12 @@
 
             <a-divider />
 
+            <h2>{{ store.playerAlchemyLevel.name }}</h2>
+
+            <a-progress :percent="alchemyLevelProgress" status="active" />
+
+            <a-divider />
+
             <!-- 选择丹方按钮 -->
             <a-button type="primary" @click="showFormulaModal">选择丹方</a-button>
 
@@ -56,6 +62,10 @@ const selectedFormula = ref(null);
 const isFormulaModalVisible = ref(false);
 const availableFormulas = ref(pillRecipes);
 const store = useUpgradeStore();
+
+const alchemyLevelProgress = computed(() => {
+    return ((store.player.alchemyExp / store.nextAlchemyLevel.requiredExperience) * 100).toFixed(0);
+});
 
 const showFormulaModal = () => {
     isFormulaModalVisible.value = true;
@@ -128,6 +138,7 @@ function finishAlchemy() {
 
     // 将生成的丹药加入背包
     store.addItemToInventory(newPill);
+    store.gainAlchemyExp();
     message.success(`炼制成功，获得${newPill.name} x${newPill.quantity}！`);
 }
 </script>

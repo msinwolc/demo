@@ -12,6 +12,7 @@ function loadState() {
     player: {
       experience: 0, // 境界经验
       miningExp: 0, // 挖矿经验
+      alchemyExp: 0, // 炼丹经验
       currentRealmIndex: 0, // 当前境界
       currentLevelIndex: 0, // 当前层级
       talentPoints: 0, // 天赋点

@@ -96,5 +96,8 @@ export const playerActions = {
     },
     gainMiningExp() {
         this.player.miningExp += 10;
+    },
+    gainAlchemyExp() {
+        this.player.alchemyExp += 10;
     }
 };
