@@ -7,25 +7,22 @@
       <p>可用天赋点: {{ store.playerTalentPoints }}</p>
 
       <!-- 属性及加号按钮 -->
-      <div>
-        <p>血量: {{ store.playerHealth }}
-          <a-button @click="upgrade('health')" size="small" icon="+" :disabled="store.playerTalentPoints <= 0"
-            style="margin-left: 8px;"></a-button>
-        </p>
-        <p>攻击: {{ store.playerAttack }}
-          <a-button @click="upgrade('attack')" size="small" icon="+" :disabled="store.playerTalentPoints <= 0"
-            style="margin-left: 8px;"></a-button>
-        </p>
-        <p>防御: {{ store.playerDefense }}
-          <a-button @click="upgrade('defense')" size="small" icon="+" :disabled="store.playerTalentPoints <= 0"
-            style="margin-left: 8px;"></a-button>
-        </p>
-      </div>
+      <a-row gutter={16}>
+        <a-col :xs="24" :sm="24" :md="12" :lg="12" v-for="(attribute, index) in attributes" :key="index">
+          <p>{{ attribute.label }}: {{ getAttributeValue(attribute.key) }}
+            <a-button @click="upgrade(attribute.key)" size="small" icon="+" :disabled="store.playerTalentPoints <= 0"
+              style="margin-left: 8px;"></a-button>
+          </p>
+        </a-col>
+      </a-row>
 
       <!-- 进度条 -->
       <div style="text-align: center; margin-top: 20px;">
         <a-progress type="circle" :percent="progressPercent" status="active" :width="80" />
       </div>
+
+      <!-- 当前功法显示 -->
+      <p style="text-align: center; margin-top: 10px;">当前功法: {{ store.currentTechniqueName }}</p>
 
       <a-divider />
 
@@ -121,12 +118,26 @@ onMounted(() => {
   startGaining();
 })
 
+// 属性列表
+const attributes = [
+  { label: '血量', key: 'health', value: store.playerHealth },
+  { label: '攻击', key: 'attack', value: store.playerAttack },
+  { label: '防御', key: 'defense', value: store.playerDefense },
+  { label: '暴击率', key: 'critRate', value: store.playerCritRate },
+  { label: '暴击伤害', key: 'critDamage', value: store.playerCritDamage },
+  { label: '闪避', key: 'dodge', value: store.playerDodge }
+];
+
+const getAttributeValue = computed(() => (key) => {
+  return attributes.find(x => x.key === key).value;
+});
+
 function startGaining() {
   store.startAutoGain();
 }
 
-function upgrade(stat) {
-  store.upgradeStat(stat);
+function upgrade(attr) {
+  store.upgradeStat(attr);
 }
 
 function goToHerbGathering() {

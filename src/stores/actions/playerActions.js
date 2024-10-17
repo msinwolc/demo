@@ -26,14 +26,13 @@ export const playerActions = {
     upgradeStat(stat) {
         if (this.player.talentPoints > 0) {
             if (stat === 'health') {
-                this.player.health += 5;
+                this.player.health += 10;
             } else if (stat === 'attack') {
-                this.player.attack += 3;
+                this.player.attack += 5;
             } else if (stat === 'defense') {
                 this.player.defense += 2;
             }
             this.player.talentPoints--;
-            // this.saveState();
         }
     },
     startAutoGain() {

@@ -16,9 +16,11 @@ function loadState() {
       currentRealmIndex: 0, // 当前境界
       currentLevelIndex: 0, // 当前层级
       talentPoints: 0, // 天赋点
-      health: 10,
+      health: 1000,
       attack: 10,
       defense: 10,
+      criticalRate: 0.1,
+      criticalDamage: 1.5,
       breakthroughCooldown: false,
       cooldownTime: 5000,
       inventory: [], // 背包
