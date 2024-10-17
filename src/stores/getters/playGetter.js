@@ -3,6 +3,7 @@
 import { miningLevels } from "@/constants/miningLevels";
 import { alchemyLevels } from "@/constants/alchemyLevels";
 import { realms } from "@/constants/realms";
+import { techniqueList } from "@/constants/techniqueList";
 
 export const levelsMap = ['一层', '二层', '三层', '四层', '五层', '六层', '七层', '八层', '九层'];
 
@@ -77,7 +78,13 @@ export const playerGetters = {
         const currentIndex = alchemyLevels.indexOf(this.playerAlchemyLevel);
         return alchemyLevels[currentIndex + 1] || this.playerAlchemyLevel;
     },
-    currentTechniques() {
+    currentActiveTechniques() {
         return this.player.activeTechniques;
     },
+    techniqueList() {
+        return techniqueList;
+    },
+    currentLearnTech() {
+        return this.player.currentLearnTech;
+    }
 };

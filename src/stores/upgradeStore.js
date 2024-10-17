@@ -25,10 +25,8 @@ function loadState() {
       breakthroughCooldown: false,
       cooldownTime: 5000,
       inventory: [], // 背包
-      activeTechniques: [
-        { id: 'technique1', name: '九天玄功', level: 3 },
-        { id: 'technique2', name: '紫霄炼气诀', level: 1 },
-      ],
+      activeTechniques: [],
+      currentLearnTech: false,
       starterPackItems: false
     },
   };

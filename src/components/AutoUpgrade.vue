@@ -29,9 +29,10 @@
 
       <!-- 显示已学会的功法按钮组 -->
       <a-row gutter={16} style="margin-top: 20px;">
-        <a-col v-for="(technique, index) in store.currentTechniques" :key="index" :xs="24" :sm="24" :md="12" :lg="6">
+        <a-col v-for="(technique, index) in store.currentActiveTechniques" :key="index" :xs="24" :sm="24" :md="12"
+          :lg="6">
           <a-button>
-            {{ technique.name }} (等级: {{ technique.level }})
+            {{ technique.name }} (等级: {{ technique.level || 1 }})
           </a-button>
         </a-col>
       </a-row>
@@ -82,6 +83,19 @@
             </a-col>
           </a-row>
         </a-tab-pane>
+
+        <a-tab-pane key="4" tab="功法">
+          <a-row gutter={16} justify="start" style="flex-wrap: wrap;">
+            <a-col v-for="(item, index) in availableTechnique" :key="index" :xs="24" :sm="12" :md="8" :lg="6" :xl="4"
+              style="display: flex; justify-content: center;">
+              <a-space style="display: flex; justify-content: center;" size="middle">
+                <a-button style="width: 100%; margin-bottom: 10px;" @click="showCultivationModal(item)">
+                  {{ item.name }} ({{ item.quantity }})
+                </a-button>
+              </a-space>
+            </a-col>
+          </a-row>
+        </a-tab-pane>
       </a-tabs>
 
       <a-divider />
@@ -92,6 +106,11 @@
       </a-space>
 
     </a-card>
+
+    <!-- 修炼确认弹框 -->
+    <a-modal v-model:open="isTechniqueModalVisible" title="确认修炼" @ok="startCultivating">
+      <p>确定要修炼 <strong>{{ selectedTechnique ? selectedTechnique.name : '' }}</strong> 吗？(同时最多修炼一种功法)</p>
+    </a-modal>
 
     <!-- 选择丹药弹窗 -->
     <a-modal v-model:open="isPotionModalVisible" title="选择丹药" @ok="breakthroughWithPill" width="80%">
@@ -125,6 +144,9 @@ const router = useRouter();
 
 const isPotionModalVisible = ref(false);
 const selectedQuantities = ref([{}]);
+
+const selectedTechnique = ref(null);
+const isTechniqueModalVisible = ref(false);
 
 onMounted(() => {
   startGaining();
@@ -174,6 +196,45 @@ const availableMeterial = computed(() => {
   return store.filterItemByType('material');
 });
 
+const availableTechnique = computed(() => {
+  return store.filterItemByType('technique');
+});
+
+const showCultivationModal = (technique) => {
+  selectedTechnique.value = technique;
+  isTechniqueModalVisible.value = true;
+}
+
+// 开始修炼功法
+const startCultivating = () => {
+  if (selectedTechnique.value) {
+    if (!store.currentLearnTech) {
+      // 开启修炼的自动进程
+      autoCultivate(selectedTechnique.value);
+    } else {
+      message.warn(`已经有在修炼的功法 ${selectedTechnique.value.name}！`);
+    }
+  }
+  // 关闭弹框
+  isTechniqueModalVisible.value = false;
+}
+
+const autoCultivate = (technique) => {
+  store.addTechnique(selectedTechnique.value)
+  setInterval(() => {
+    // 增加修炼经验
+    technique.exp = (technique.exp || 0) + 10;
+    technique.level = technique.level || 1;
+    const allLevels = store.techniqueList.find(t => t.name === technique.name).levels;
+    // 升级逻辑
+    if (technique.exp >= allLevels[technique.level - 1].requiredExp) {
+      technique.level++;
+      technique.exp = 0; // 经验归零
+      message.success(`${technique.name} 升级到 ${technique.level}级！`);
+    }
+  }, 1000); // 每秒自动增加经验
+}
+
 function breakthrough() {
   let res = store.attemptBreakthrough(); // 调用突破方法
   if (res) {
@@ -214,7 +275,7 @@ const canBreakthrough = computed(() => {
 function claimStarterPack() {
   // 调用 store 的方法领取礼包
   store.addStarterPackItems();
-  message.success('领取成功，获得初级筑基丹 x5，灵石 x1000');
+  message.success('领取成功，获得初级筑基丹 x5，灵石 x1000，引灵诀 x1');
 }
 
 // 筛选与当前境界相关的丹药

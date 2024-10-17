@@ -98,5 +98,11 @@ export const playerActions = {
     },
     gainAlchemyExp() {
         this.player.alchemyExp += 10;
-    }
+    },
+    addTechnique(technique) {
+        if (this.player.activeTechniques.find(x => x.name === technique.name)) { return }
+        this.player.activeTechniques.push(technique);
+        this.player.currentLearnTech = true;
+        this.removeItemFromInventory(technique.name, 1);
+    },
 };

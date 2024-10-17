@@ -1,6 +1,6 @@
-export const books = [
+export const techniqueList = [
     {
-        name: '引灵法',
+        name: '引灵诀',
         type: 'cultivationSpeed',
         requiredReal: '炼气',
         levels: generateLevels(9, 0.01, 100),
