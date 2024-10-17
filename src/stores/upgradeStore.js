@@ -21,9 +21,14 @@ function loadState() {
       defense: 10,
       criticalRate: 0.1,
       criticalDamage: 1.5,
+      dodgeRate: 0.1,
       breakthroughCooldown: false,
       cooldownTime: 5000,
       inventory: [], // 背包
+      activeTechniques: [
+        { id: 'technique1', name: '九天玄功', level: 3 },
+        { id: 'technique2', name: '紫霄炼气诀', level: 1 },
+      ],
       starterPackItems: false
     },
   };

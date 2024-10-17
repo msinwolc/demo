@@ -38,6 +38,15 @@ export const playerGetters = {
     playerTalentPoints() {
         return this.player.talentPoints;
     },
+    playerCriticalRate() {
+        return this.player.criticalRate;
+    },
+    playerDodgeRate() {
+        return this.player.dodgeRate;
+    },
+    playerCriticalDamage() {
+        return this.player.criticalRate;
+    },
     requiredExp() {
         return this.nextLevel.experience;
     },
@@ -67,5 +76,8 @@ export const playerGetters = {
     nextAlchemyLevel() {
         const currentIndex = alchemyLevels.indexOf(this.playerAlchemyLevel);
         return alchemyLevels[currentIndex + 1] || this.playerAlchemyLevel;
+    },
+    currentTechniques() {
+        return this.player.activeTechniques;
     },
 };

@@ -8,10 +8,10 @@
 
       <!-- 属性及加号按钮 -->
       <a-row gutter={16}>
-        <a-col :xs="24" :sm="24" :md="12" :lg="12" v-for="(attribute, index) in attributes" :key="index">
-          <p>{{ attribute.label }}: {{ getAttributeValue(attribute.key) }}
-            <a-button @click="upgrade(attribute.key)" size="small" icon="+" :disabled="store.playerTalentPoints <= 0"
-              style="margin-left: 8px;"></a-button>
+        <a-col :xs="24" :sm="24" :md="12" :lg="12" v-for="(attribute, index) in basicAttributes" :key="index">
+          <p>{{ attribute.label }}: {{ getAttributeValue(attribute.key) }}{{ attribute.multiplier === 100 ? '%' : '' }}
+            <a-button v-if="attribute.canUpgrade" @click="upgrade(attribute.key)" size="small" icon="+"
+              :disabled="store.playerTalentPoints <= 0" style="margin-left: 8px;"></a-button>
           </p>
         </a-col>
       </a-row>
@@ -21,8 +21,20 @@
         <a-progress type="circle" :percent="progressPercent" status="active" :width="80" />
       </div>
 
+      <a-divider />
+
       <!-- 当前功法显示 -->
-      <p style="text-align: center; margin-top: 10px;">当前功法: {{ store.currentTechniqueName }}</p>
+      <!-- 当前功法信息 -->
+      <p style="text-align: center; margin-top: 10px;">当前功法: </p>
+
+      <!-- 显示已学会的功法按钮组 -->
+      <a-row gutter={16} style="margin-top: 20px;">
+        <a-col v-for="(technique, index) in store.currentTechniques" :key="index" :xs="24" :sm="24" :md="12" :lg="6">
+          <a-button>
+            {{ technique.name }} (等级: {{ technique.level }})
+          </a-button>
+        </a-col>
+      </a-row>
 
       <a-divider />
 
@@ -119,17 +131,18 @@ onMounted(() => {
 })
 
 // 属性列表
-const attributes = [
-  { label: '血量', key: 'health', value: store.playerHealth },
-  { label: '攻击', key: 'attack', value: store.playerAttack },
-  { label: '防御', key: 'defense', value: store.playerDefense },
-  { label: '暴击率', key: 'critRate', value: store.playerCritRate },
-  { label: '暴击伤害', key: 'critDamage', value: store.playerCritDamage },
-  { label: '闪避', key: 'dodge', value: store.playerDodge }
+const basicAttributes = [
+  { label: '血量', key: 'health', attr: 'playerHealth', canUpgrade: true, multiplier: 1 },
+  { label: '攻击', key: 'attack', attr: 'playerAttack', canUpgrade: true, multiplier: 1 },
+  { label: '防御', key: 'defense', attr: 'playerDefense', canUpgrade: true, multiplier: 1 },
+  { label: '暴击率', key: 'critRate', attr: 'playerCriticalRate', multiplier: 100 },
+  { label: '暴击伤害', key: 'critDamage', attr: 'playerCriticalDamage', multiplier: 100 },
+  { label: '闪避', key: 'dodgeRate', attr: 'playerDodgeRate', multiplier: 100 }
 ];
 
 const getAttributeValue = computed(() => (key) => {
-  return attributes.find(x => x.key === key).value;
+  let attr = basicAttributes.find(x => x.key === key);
+  return (store[attr.attr] * attr.multiplier).toFixed(0);
 });
 
 function startGaining() {
