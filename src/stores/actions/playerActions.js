@@ -1,10 +1,29 @@
 // src/stores/actions/playerActions.js
 
 import { realms } from "@/constants/realms";
+import { techniqueList } from "@/constants/techniqueList";
 
 export const playerActions = {
-    gainExperience(amount) {
-        this.player.experience += amount;
+    gainExperience() {
+        const amount = 1;
+
+        let multiplier = 1;
+
+        const cultivationSpeedTechs = this.currentActiveTechniques.filter(t => t.effect === 'cultivationSpeed');
+
+        for (let i = 0; i < cultivationSpeedTechs.length; i++) {
+            const currentLevel = cultivationSpeedTechs[i].level || 1;
+
+            console.log(techniqueList.find(t => t.name === cultivationSpeedTechs[i].name).levels, currentLevel - 1);
+
+            const techMultiplier = techniqueList.find(t => t.name === cultivationSpeedTechs[i].name).levels[currentLevel - 1].multiplier;
+
+            multiplier = 1 + techMultiplier;
+        }
+
+        console.log(amount * multiplier);
+
+        this.player.experience += amount * multiplier;
 
         while (this.player.currentLevelIndex < this.playerRealm.levels.length - 1 &&
             this.player.experience >= this.playerRealm.levels[this.player.currentLevelIndex + 1].experience) {
@@ -37,12 +56,12 @@ export const playerActions = {
     },
     startAutoGain() {
         // const multiplier = this.palyerLevel.multiplier;
-        const multiplier = 100;
+        // const multiplier = 100;
         setInterval(() => {
             if (this.playerLevel.level === 9 && this.player.experience >= this.playerLevel.experience) {
                 return;
             }
-            this.gainExperience(1 * multiplier);
+            this.gainExperience();
         }, 500);
     },
     attemptBreakthrough() {

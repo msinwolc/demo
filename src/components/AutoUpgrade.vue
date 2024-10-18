@@ -221,16 +221,21 @@ const startCultivating = () => {
 
 const autoCultivate = (technique) => {
   store.addTechnique(selectedTechnique.value)
-  setInterval(() => {
+  const autoCultivateInterval = setInterval(() => {
     // 增加修炼经验
     technique.exp = (technique.exp || 0) + 10;
     technique.level = technique.level || 1;
     const allLevels = store.techniqueList.find(t => t.name === technique.name).levels;
     // 升级逻辑
     if (technique.exp >= allLevels[technique.level - 1].requiredExp) {
-      technique.level++;
-      technique.exp = 0; // 经验归零
-      message.success(`${technique.name} 升级到 ${technique.level}级！`);
+      if (technique.level >= allLevels.length) {
+        message.success(`${technique.name} 已修炼至最高等级`);
+        clearInterval(autoCultivateInterval);
+      } else {
+        technique.level++;
+        technique.exp = 0; // 经验归零
+        message.success(`${technique.name} 升级到 ${technique.level}级！`);
+      }
     }
   }, 1000); // 每秒自动增加经验
 }
