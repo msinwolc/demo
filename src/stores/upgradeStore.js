@@ -17,8 +17,8 @@ function loadState() {
       currentLevelIndex: 0, // 当前层级
       talentPoints: 0, // 天赋点
       health: 1000,
-      attack: 10,
-      defense: 10,
+      attack: 100,
+      defense: 50,
       criticalRate: 0.1,
       criticalDamage: 1.5,
       dodgeRate: 0.1,

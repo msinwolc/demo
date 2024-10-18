@@ -208,11 +208,12 @@ const showCultivationModal = (technique) => {
 // 开始修炼功法
 const startCultivating = () => {
   if (selectedTechnique.value) {
-    if (!store.currentLearnTech) {
+    if (!store.currentLearnStatus) {
+      message.success(`你已经学会 ${selectedTechnique.value.name}！`);
       // 开启修炼的自动进程
       autoCultivate(selectedTechnique.value);
     } else {
-      message.warn(`已经有在修炼的功法 ${selectedTechnique.value.name}！`);
+      message.warn(`已经有在修炼的功法！`);
     }
   }
   // 关闭弹框
@@ -231,9 +232,11 @@ const autoCultivate = (technique) => {
       if (technique.level >= allLevels.length) {
         message.success(`${technique.name} 已修炼至最高等级`);
         clearInterval(autoCultivateInterval);
+        store.changeCurrentLearnStatus(false);
       } else {
         technique.level++;
         technique.exp = 0; // 经验归零
+        store.addBasicAttrByTech();
         message.success(`${technique.name} 升级到 ${technique.level}级！`);
       }
     }
@@ -280,7 +283,7 @@ const canBreakthrough = computed(() => {
 function claimStarterPack() {
   // 调用 store 的方法领取礼包
   store.addStarterPackItems();
-  message.success('领取成功，获得初级筑基丹 x5，灵石 x1000，引灵诀 x1');
+  message.success('领取成功，获得初级筑基丹 x5，灵石 x1000，引灵诀 x1，紫霞真气 x1，烈焰刀诀 x1');
 }
 
 // 筛选与当前境界相关的丹药
