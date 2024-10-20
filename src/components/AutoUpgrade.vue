@@ -99,7 +99,8 @@
       </a-tabs>
 
       <a-divider />
-      <a-space style="display: flex; justify-content: center; margin-top: 20px;" size="large">
+      <a-space style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px;"
+        size="large">
         <a-button type="primary" @click="goToHerbGathering">外出采药</a-button>
         <a-button type="primary" @click="goToAlchemyProcess">前往炼丹房</a-button>
         <a-button type="primary" @click="goToCryptoMining">外出挖矿</a-button>
@@ -151,6 +152,7 @@ const isTechniqueModalVisible = ref(false);
 
 onMounted(() => {
   startGaining();
+  startCultivating();
 })
 
 // 属性列表

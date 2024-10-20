@@ -42,4 +42,13 @@ export const useUpgradeStore = defineStore('upgrade', {
     ...playerActions,
     ...inventoryActions,
   },
+  persist: {
+    enabled: true, // 开启持久化
+    strategies: [
+      {
+        key: 'play-store', // 存储键名
+        storage: localStorage, // 使用 localStorage 存储
+      },
+    ],
+  },
 });

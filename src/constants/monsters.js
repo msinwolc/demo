@@ -1,15 +1,15 @@
 export const monsters = {
     "炼气": [
-        { name: "野狼", health: 1200, attack: 90, defense: 30 },
-        { name: "灵蛇", health: 1500, attack: 85, defense: 35 },
-        { name: "幽火鬼婴", health: 1600, attack: 100, defense: 40 },
-        { name: "血蝠", health: 1450, attack: 95, defense: 28 },
-        { name: "赤焰蚁", health: 2000, attack: 120, defense: 32 },
-        { name: "鬼影猫", health: 2350, attack: 108, defense: 36 },
-        { name: "噬魂鼠", health: 3050, attack: 135, defense: 38 },
-        { name: "赤炎狐", health: 3380, attack: 97, defense: 35 },
-        { name: "冰晶虫", health: 2250, attack: 118, defense: 34 },
-        { name: "鬼火虫", health: 3700, attack: 140, defense: 32 }
+        { name: "野狼", health: 1200, attack: 150, defense: 30, color: '#A9A9A9' },
+        { name: "灵蛇", health: 1500, attack: 85, defense: 35, color: '#67c23a' },
+        { name: "幽火鬼婴", health: 1600, attack: 100, defense: 40, color: '#67c23a' },
+        { name: "血蝠", health: 1450, attack: 95, defense: 28, color: '#67c23a' },
+        { name: "赤焰蚁", health: 2000, attack: 180, defense: 32, color: '#1E90FF' },
+        { name: "鬼影猫", health: 2350, attack: 198, defense: 36, color: '#1E90FF' },
+        { name: "噬魂鼠", health: 3050, attack: 225, defense: 38, color: '#8B00FF' },
+        { name: "赤炎狐", health: 3380, attack: 250, defense: 35, color: '#8B00FF' },
+        { name: "冰晶虫", health: 4950, attack: 88, defense: 34, color: '#e6a23c' },
+        { name: "鬼火虫", health: 3700, attack: 270, defense: 32, color: '#FF6347' }
     ],
     "筑基": [
         { name: "妖狐", health: 3500, attack: 130, defense: 70 },

@@ -28,7 +28,7 @@
 
             <!-- 战斗日志 -->
             <div v-for="(message, index) in exploreResult" :key="index">
-                <p>{{ message }}</p>
+                <p v-html="message"></p>
             </div>
         </a-card>
     </div>
@@ -118,38 +118,43 @@ const startBattle = () => {
     monsterHealth.value = monster.health;
 
     removeMsg();
-    exploreResult.value.push(`遭遇了${monster.name}！`);
+    exploreResult.value.push(`遭遇了<span style="color: ${monster.color}">${monster.name}</span>！`);
 
     const battleLoop = () => {
         if (playerHealth.value > 0 && monsterHealth.value > 0) {
             setTimeout(() => {
                 if (playerTurn) {
                     // 玩家回合
-                    const damage = calculateDamage(store.playerAttack, store.playerCriticalRate);
+                    const { damage, isCrit } = calculateDamage(store.playerAttack - monster.defense, store.playerCriticalRate);
+                    console.log(damage, isCrit);
                     if (!isDodge(monster.dodgeRate)) {
                         monsterHealth.value -= damage;
                         if (monsterHealth.value <= 0) {
                             monsterHealth.value = 0;
                         }
                         removeMsg();
-                        exploreResult.value.push(`你攻击了${monster.name}，造成了${damage}点伤害！`);
+                        exploreResult.value.push(
+                            `你攻击了<span style="color: ${monster.color}">${monster.name}</span>，造成了<span style="color: ${isCrit ? 'red' : 'gray'}">${damage}${isCrit ? '!' : ''}</span>点伤害！`
+                        );
                     } else {
                         removeMsg();
-                        exploreResult.value.push(`你攻击了${monster.name}，但被闪避了！`);
+                        exploreResult.value.push(`你攻击了<span style="color: ${monster.color}">${monster.name}</span>，但被闪避了！`);
                     }
                 } else {
                     // 怪物回合
-                    const damage = calculateDamage(monster.attack, monster.critRate);
+                    const { damage, isCrit } = calculateDamage(monster.attack - store.playerDefense, monster.critRate);
                     if (!isDodge(store.playerDodge)) {
                         playerHealth.value -= damage;
                         if (playerHealth.value <= 0) {
                             playerHealth.value = 0;
                         }
                         removeMsg();
-                        exploreResult.value.push(`${monster.name}攻击了你，造成了${damage}点伤害！`);
+                        exploreResult.value.push(
+                            `<span style="color: ${monster.color}">${monster.name}</span>攻击了你，造成了<span style="color: ${isCrit ? 'red' : 'gray'}">${damage}${isCrit ? '!' : ''}</span>点伤害！`
+                        );
                     } else {
                         removeMsg();
-                        exploreResult.value.push(`${monster.name}攻击了你，但被闪避了！`);
+                        exploreResult.value.push(`<span style="color: ${monster.color}">${monster.name}</span>攻击了你，但被闪避了！`);
                     }
                 }
                 playerTurn = !playerTurn;
@@ -161,7 +166,7 @@ const startBattle = () => {
             // 战斗结束
             if (playerHealth.value > 0) {
                 removeMsg();
-                exploreResult.value.push(`你击败了${monster.name}`);
+                exploreResult.value.push(`你击败了<span style="color: ${monster.color}">${monster.name}</span>`);
                 acquireRandomItem(monster);
             } else {
                 exploreResult.value.push("你被击败...");
@@ -180,8 +185,8 @@ const startBattle = () => {
 // 计算伤害（考虑暴击）
 const calculateDamage = (baseDamage, critRate) => {
     const isCrit = Math.random() < critRate;
-    const finalDamane = isCrit ? baseDamage * 1.5 : baseDamage;
-    return finalDamane <= 1 ? 1 : finalDamane;
+    const finalDamage = isCrit ? baseDamage * 1.5 : baseDamage;
+    return { damage: Math.floor(finalDamage), isCrit };
 };
 
 // 判断是否闪避
@@ -199,9 +204,11 @@ const generateRandomMonster = () => {
 
 // 获得道具
 const acquireRandomItem = (monster) => {
-    const item = { name: `${monster.name}内丹`, quantity: 1 };
+    const item = { name: `${monster.name}内丹`, quantity: 1, type: 'material' };
     store.addItemToInventory(item);
-    exploreResult.value.push(`获得 ${item.name}x1`);
+    const money = { name: "灵石", quantity: Math.round(monster.health / 100) };
+    store.addItemToInventory(money);
+    exploreResult.value.push(`获得 ${item.name}x1，灵石x${Math.round(monster.health / 100)}`);
 };
 
 const removeMsg = () => {

@@ -12,7 +12,7 @@ export const ores = [
         name: '玄铁',
         amount: 0,
         rarity: '优秀',
-        color: '#4CAF50', // 绿色
+        color: '#67c23a', // 绿色
         weight: 3,
     },
     {
@@ -33,7 +33,7 @@ export const ores = [
         name: '血魂石',
         amount: 0,
         rarity: '传奇',
-        color: '#FFD700', // 金色
+        color: '#e6a23c', // 金色
         weight: 0.5,
     },
     {
