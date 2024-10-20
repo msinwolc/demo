@@ -35,7 +35,7 @@ export const playerActions = {
             if (stat === 'health') {
                 this.player.health = (this.player.health + 10) * basicMultiplier;
             } else if (stat === 'attack') {
-                this.player.attack += 5 * skillMultiplier;
+                this.player.attack = (this.player.attack + 5) * skillMultiplier;
             } else if (stat === 'defense') {
                 this.player.defense = (this.player.defense + 2) * basicMultiplier;
             }
@@ -129,6 +129,10 @@ export const playerActions = {
         const multiplier = this.getMultiplierByTech('basicAttributes');
         this.player.health *= multiplier;
         this.player.defense *= multiplier;
+    },
+    addAttackAttrByTech() {
+        const multiplier = this.getMultiplierByTech('skills');
+        this.player.attack *= multiplier;
     },
     changeCurrentLearnStatus(status) {
         this.player.currentLearnTech = status;

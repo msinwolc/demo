@@ -103,6 +103,7 @@
         <a-button type="primary" @click="goToHerbGathering">外出采药</a-button>
         <a-button type="primary" @click="goToAlchemyProcess">前往炼丹房</a-button>
         <a-button type="primary" @click="goToCryptoMining">外出挖矿</a-button>
+        <a-button type="primary" @click="goToExplore">探索秘境</a-button>
       </a-space>
 
     </a-card>
@@ -187,6 +188,10 @@ function goToCryptoMining() {
   router.push({ name: 'CryptoMining' });
 }
 
+function goToExplore() {
+  router.push({ name: 'ExploreProcess' });
+}
+
 // 计算属性，只返回数量大于 0 的物品
 const availableConsumable = computed(() => {
   return store.filterItemByType('consumable');
@@ -237,6 +242,7 @@ const autoCultivate = (technique) => {
         technique.level++;
         technique.exp = 0; // 经验归零
         store.addBasicAttrByTech();
+        store.addAttackAttrByTech();
         message.success(`${technique.name} 升级到 ${technique.level}级！`);
       }
     }
