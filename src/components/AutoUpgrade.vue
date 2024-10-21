@@ -152,7 +152,7 @@ const isTechniqueModalVisible = ref(false);
 
 onMounted(() => {
   startGaining();
-  startCultivating();
+  continueCultivating();
 })
 
 // 属性列表
@@ -212,14 +212,21 @@ const showCultivationModal = (technique) => {
   isTechniqueModalVisible.value = true;
 }
 
+const continueCultivating = () => {
+  selectedTechnique.value = store.currentLearnTech;
+  if (store.currentLearnTech !== null && store.currentLearnTech.name !== undefined && store.currentLearnTech.level !== 9) {
+    autoCultivate(store.currentLearnTech);
+  }
+}
+
 // 开始修炼功法
 const startCultivating = () => {
   if (selectedTechnique.value) {
-    if (!store.currentLearnStatus) {
+    if (!store.currentLearnTech) {
       message.success(`你已经学会 ${selectedTechnique.value.name}！`);
       // 开启修炼的自动进程
       autoCultivate(selectedTechnique.value);
-    } else if (store.currentLearnStatus && store.currentLearnStatus.exp !== undefined && store.currentLearnStatus.exp !== 0) {
+    } else if (store.currentLearnTech && store.currentLearnTech.exp !== undefined && store.currentLearnTech.exp !== 0) {
       message.warn(`已经有在修炼的功法！`);
     }
   }
@@ -239,13 +246,14 @@ const autoCultivate = (technique) => {
       if (technique.level >= allLevels.length) {
         message.success(`${technique.name} 已修炼至最高等级`);
         clearInterval(autoCultivateInterval);
-        store.changeCurrentLearnStatus(technique);
+        store.changecurrentLearnTech(technique);
       } else {
         technique.level++;
         technique.exp = 0; // 经验归零
         store.addBasicAttrByTech();
         store.addAttackAttrByTech();
         message.success(`${technique.name} 升级到 ${technique.level}级！`);
+        store.changecurrentLearnTech(technique);
       }
     }
   }, 1000); // 每秒自动增加经验

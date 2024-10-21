@@ -126,7 +126,6 @@ const startBattle = () => {
                 if (playerTurn) {
                     // 玩家回合
                     const { damage, isCrit } = calculateDamage(store.playerAttack - monster.defense, store.playerCriticalRate);
-                    console.log(damage, isCrit);
                     if (!isDodge(monster.dodgeRate)) {
                         monsterHealth.value -= damage;
                         if (monsterHealth.value <= 0) {
@@ -161,7 +160,7 @@ const startBattle = () => {
 
                 // 继续战斗循环
                 battleLoop();
-            }, 1000); // 每回合延迟1秒
+            }, 500); // 每回合延迟0.5秒
         } else {
             // 战斗结束
             if (playerHealth.value > 0) {

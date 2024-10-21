@@ -84,7 +84,7 @@ export const playerGetters = {
     techniqueList() {
         return techniqueList;
     },
-    currentLearnStatus() {
+    currentLearnTech() {
         return this.player.currentLearnTech;
     }
 };

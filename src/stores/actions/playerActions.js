@@ -109,7 +109,7 @@ export const playerActions = {
     addTechnique(technique) {
         if (this.player.activeTechniques.find(x => x.name === technique.name)) { return }
         this.player.activeTechniques.push(technique);
-        this.changeCurrentLearnStatus(technique);
+        this.changecurrentLearnTech(technique);
         this.removeItemFromInventory(technique.name, 1);
     },
     getMultiplierByTech(type) {
@@ -134,7 +134,23 @@ export const playerActions = {
         const multiplier = this.getMultiplierByTech('skills');
         this.player.attack *= multiplier;
     },
-    changeCurrentLearnStatus(technique) {
+    changecurrentLearnTech(technique) {
         this.player.currentLearnTech = technique;
+        this.updateTechnique(technique);
+    },
+    updateTechnique(updatedTechnique) {
+        const index = this.player.activeTechniques.findIndex(
+            (technique) => technique.name === updatedTechnique.name
+        );
+
+        if (index !== -1) {
+            // 更新技术对象
+            this.player.activeTechniques[index] = {
+                ...this.player.activeTechniques[index], // 保留其他属性
+                level: updatedTechnique.level, // 更新等级或其他属性
+            };
+        } else {
+            console.log("未找到");
+        }
     },
 };
