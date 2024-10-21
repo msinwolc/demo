@@ -219,7 +219,7 @@ const startCultivating = () => {
       message.success(`你已经学会 ${selectedTechnique.value.name}！`);
       // 开启修炼的自动进程
       autoCultivate(selectedTechnique.value);
-    } else {
+    } else if (store.currentLearnStatus && store.currentLearnStatus.exp !== undefined && store.currentLearnStatus.exp !== 0) {
       message.warn(`已经有在修炼的功法！`);
     }
   }
@@ -239,7 +239,7 @@ const autoCultivate = (technique) => {
       if (technique.level >= allLevels.length) {
         message.success(`${technique.name} 已修炼至最高等级`);
         clearInterval(autoCultivateInterval);
-        store.changeCurrentLearnStatus(false);
+        store.changeCurrentLearnStatus(technique);
       } else {
         technique.level++;
         technique.exp = 0; // 经验归零

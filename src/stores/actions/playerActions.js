@@ -109,7 +109,7 @@ export const playerActions = {
     addTechnique(technique) {
         if (this.player.activeTechniques.find(x => x.name === technique.name)) { return }
         this.player.activeTechniques.push(technique);
-        this.changeCurrentLearnStatus(true);
+        this.changeCurrentLearnStatus(technique);
         this.removeItemFromInventory(technique.name, 1);
     },
     getMultiplierByTech(type) {
@@ -134,7 +134,7 @@ export const playerActions = {
         const multiplier = this.getMultiplierByTech('skills');
         this.player.attack *= multiplier;
     },
-    changeCurrentLearnStatus(status) {
-        this.player.currentLearnTech = status;
+    changeCurrentLearnStatus(technique) {
+        this.player.currentLearnTech = technique;
     },
 };

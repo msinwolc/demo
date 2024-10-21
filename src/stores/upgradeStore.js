@@ -26,7 +26,7 @@ function loadState() {
       cooldownTime: 5000,
       inventory: [], // 背包
       activeTechniques: [],
-      currentLearnTech: false,
+      currentLearnTech: null,
       starterPackItems: false
     },
   };
