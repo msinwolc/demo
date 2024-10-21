@@ -65,10 +65,14 @@ function removeMsg() {
 
 // 根据境界返回相应的材料
 function getMaterialsForRealm(realm) {
-    // 找到对应的丹药
-    const pillRecipe = pillRecipes.find(pill => pill.name.includes(realm.name));
-    // 返回材料列表，如果没有找到对应的丹药，则返回空数组
-    return pillRecipe ? pillRecipe.materials : [];
+    // 过滤掉特定关键词的材料
+    const excludedKeywords = ["内丹", "皮", "骨"];
+    const materialsForRealm = pillRecipes
+        .filter(potion => potion.requiredRealm === realm.name) // 过滤出符合条件的丹药
+        .flatMap(potion => potion.materials) // 提取所有材料
+        .filter(material => !excludedKeywords.some(keyword => material.name.includes(keyword))); // 过滤掉包含特定关键词的材料
+
+    return materialsForRealm;
 }
 </script>
 

@@ -63,7 +63,7 @@
             <a-col v-for="(item, index) in availableConsumable" :key="index" :xs="24" :sm="12" :md="8" :lg="6" :xl="4"
               style="display: flex; justify-content: center;">
               <a-space style="display: flex; justify-content: center;" size="middle">
-                <a-button style="width: 100%; margin-bottom: 10px;">
+                <a-button style="width: 100%; margin-bottom: 10px;" @click="showConsumable(item)">
                   {{ item.name }} ({{ item.quantity }})
                 </a-button>
               </a-space>
@@ -132,6 +132,16 @@
         </a-col>
       </a-row>
     </a-modal>
+
+    <!-- 修炼确认弹框 -->
+    <a-modal v-model:open="isConsumableModalVisible" title="道具详情">
+      <h3>{{ selectedConsumItem.name }}</h3>
+      <p><strong>作用:</strong> {{ selectedConsumItem.effect.desc }}</p>
+      <div v-if="selectedConsumItem.effect.type !== 'money' && selectedConsumItem.effect.type !== 'breakProbability'">
+        <a-button type="primary" @click="useItem">使用</a-button>
+      </div>
+    </a-modal>
+
   </div>
 </template>
 
@@ -144,11 +154,13 @@ import { useRouter } from 'vue-router';
 const store = useUpgradeStore();
 const router = useRouter();
 
-const isPotionModalVisible = ref(false);
 const selectedQuantities = ref([{}]);
-
 const selectedTechnique = ref(null);
+const selectedConsumItem = ref({});
+
 const isTechniqueModalVisible = ref(false);
+const isPotionModalVisible = ref(false);
+const isConsumableModalVisible = ref(false);
 
 onMounted(() => {
   startGaining();
@@ -331,6 +343,11 @@ function decrementQuantity(itemName) {
   if (selected.quantity > 0) {
     selected.quantity--;
   }
+}
+
+const showConsumable = (item) => {
+  isConsumableModalVisible.value = true;
+  selectedConsumItem.value = item;
 }
 
 </script>

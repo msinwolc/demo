@@ -76,7 +76,7 @@ export const playerActions = {
             pills.forEach(pill => {
                 const inventoryItem = this.getItemByName(pill.name);
                 if (inventoryItem) {
-                    successChance += inventoryItem.successRate * pill.quantity; // 根据药品的成功率和数量提升成功率
+                    successChance += inventoryItem.effect.addCount * pill.quantity; // 根据药品的成功率和数量提升成功率
                     inventoryItem.quantity -= pill.quantity;
                 }
             });
@@ -144,7 +144,7 @@ export const playerActions = {
         );
 
         if (index !== -1) {
-            // 更新技术对象
+            // 更新对象
             this.player.activeTechniques[index] = {
                 ...this.player.activeTechniques[index], // 保留其他属性
                 level: updatedTechnique.level, // 更新等级或其他属性

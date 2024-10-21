@@ -17,17 +17,20 @@
 
             <!-- 显示所选丹方和所需材料 -->
             <div v-if="selectedFormula">
+                <a-divider />
                 <h3>{{ selectedFormula.name }}</h3>
                 <div v-for="(material, index) in selectedFormula.materials" :key="index" style="margin-top: 10px;">
+                    <span>
+                        {{ material.name }} (需要: {{ material.quantity * totalQuantity }}，拥有: {{
+                            material.inventoryQuantity }}，已添加:
+                        {{ material.addedQuantity }})
+                    </span>
+                </div>
+                <div style="margin-top: 10px;">
                     <a-space>
-                        <a-button @click="decrementMaterial(material.name)"
-                            :disabled="material.addedQuantity <= 0">-</a-button>
-                        <span>
-                            {{ material.name }} (需要: {{ material.quantity }}，拥有: {{ material.inventoryQuantity }}，已添加:
-                            {{ material.addedQuantity }})
-                        </span>
-                        <a-button @click="incrementMaterial(material.name)"
-                            :disabled="material.addedQuantity > material.inventoryQuantity">+</a-button>
+                        <a-button @click="decrementMaterial" :disabled="totalQuantity <= 1">-</a-button>
+                        <span>炼制份数: {{ totalQuantity }}</span>
+                        <a-button @click="incrementMaterial">+</a-button>
                     </a-space>
                 </div>
             </div>
@@ -61,6 +64,8 @@ const progress = ref(0);
 const selectedFormula = ref(null);
 const isFormulaModalVisible = ref(false);
 const availableFormulas = ref(pillRecipes);
+const totalQuantity = ref(0);
+
 const store = useUpgradeStore();
 
 const alchemyLevelProgress = computed(() => {
@@ -83,16 +88,27 @@ const selectFormula = (formula) => {
     isFormulaModalVisible.value = false;
 };
 
-const incrementMaterial = (materialName) => {
-    const material = selectedFormula.value.materials.find(mat => mat.name === materialName);
-    if (material.addedQuantity < material.inventoryQuantity) {
-        material.addedQuantity++;
+const incrementMaterial = () => {
+    const canIncrease = selectedFormula.value.materials.every(material =>
+        (material.quantity * (totalQuantity.value + 1)) <= material.inventoryQuantity
+    );
+    if (canIncrease) {
+        selectedFormula.value.materials.forEach(material =>
+            material.addedQuantity = (material.quantity * (totalQuantity.value + 1))
+        );
+        totalQuantity.value++;
+    } else {
+        message.warn("材料不足，请前往采药或探索");
     }
 };
 
-const decrementMaterial = (materialName) => {
-    const material = selectedFormula.value.materials.find(mat => mat.name === materialName);
-    if (material.addedQuantity > 0) material.addedQuantity--;
+const decrementMaterial = () => {
+    if (totalQuantity.value > 1) {
+        selectedFormula.value.materials.forEach(material =>
+            material.addedQuantity -= material.quantity
+        );
+        totalQuantity.value--;
+    }
 };
 
 const canStartAlchemy = computed(() => {
@@ -105,6 +121,12 @@ const startAlchemy = () => {
         return;
     }
     message.success('开始炼丹！');
+    selectedFormula.value.materials.forEach(material => {
+        // 从背包中减去总份数的材料
+        store.removeItemFromInventory(material.name, totalQuantity.value * material.addedQuantity);
+        // 更新显示数量
+        material.inventoryQuantity = store.getInventoryQuantity(material.name);
+    });
     progress.value = 0;
     const interval = setInterval(() => {
         if (progress.value < 100) {
@@ -119,21 +141,32 @@ const startAlchemy = () => {
 function finishAlchemy() {
     const rand = Math.random();
     let pillQuality;
+    let rate;
 
     if (rand < 0.5) {
         pillQuality = "初级"; // 50%的概率生成初级丹药
+        rate = 1;
     } else if (rand < 0.8) {
         pillQuality = "中级"; // 30%的概率生成中级丹药
+        rate = 1.2
     } else {
         pillQuality = "高级"; // 20%的概率生成高级丹药
+        rate = 1.4
     }
 
-    const quantity = Math.floor(Math.random() * 10) + 1; // 生成1到10之间的随机数量
+    const quantity = Math.floor(Math.random() * 10) + totalQuantity.value; // 生成1到10之间的随机数量
+
+    const { materials, ...rest } = selectedFormula.value;
+
+    console.log(materials);
+
+    rest.effect.addCount = Number((rest.effect.addCount * rate).toFixed(2));
 
     const newPill = {
+        ...rest,
         name: `${pillQuality}${selectedFormula.value.name}`,
         quantity: quantity,
-        type: 'consumable'
+        type: 'consumable',
     };
 
     // 将生成的丹药加入背包
